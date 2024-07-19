@@ -6,11 +6,21 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Thêm ánh sáng vào cảnh
-const light = new THREE.AmbientLight(0x404040);
-scene.add(light);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0x404040, 2); // Ánh sáng xung quanh tăng cường
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Ánh sáng hướng
 directionalLight.position.set(0, 1, 0).normalize();
 scene.add(directionalLight);
+
+const spotLight = new THREE.SpotLight(0xffffff, 1.5); // Đèn chiếu
+spotLight.position.set(100, 1000, 100);
+spotLight.castShadow = true;
+scene.add(spotLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 1); // Đèn điểm
+pointLight.position.set(50, 50, 50);
+scene.add(pointLight);
 
 // Thêm OrbitControls để người dùng có thể xoay và di chuyển camera
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
