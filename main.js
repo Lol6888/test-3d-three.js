@@ -3,22 +3,23 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.vr.enabled = true; // Kích hoạt chế độ VR
 document.body.appendChild(renderer.domElement);
 
 // Thêm ánh sáng vào cảnh
-const ambientLight = new THREE.AmbientLight(0x404040, 2); // Ánh sáng xung quanh tăng cường
+const ambientLight = new THREE.AmbientLight(0x404040, 2);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Ánh sáng hướng
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(0, 1, 0).normalize();
 scene.add(directionalLight);
 
-const spotLight = new THREE.SpotLight(0xffffff, 1.5); // Đèn chiếu
+const spotLight = new THREE.SpotLight(0xffffff, 1.5);
 spotLight.position.set(100, 1000, 100);
 spotLight.castShadow = true;
 scene.add(spotLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 1); // Đèn điểm
+const pointLight = new THREE.PointLight(0xffffff, 1);
 pointLight.position.set(50, 50, 50);
 scene.add(pointLight);
 
@@ -39,7 +40,11 @@ camera.position.z = 5;
 
 // Hàm animate để cập nhật và render cảnh
 function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
+    renderer.setAnimationLoop(() => {
+        controls.update();
+        renderer.render(scene, camera);
+    });
 }
+
+// Thêm nút Enter VR vào trang web
+document.body.appendChild(WEBVR.createButton(renderer));
