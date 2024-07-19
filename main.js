@@ -1,50 +1,73 @@
-// Khởi tạo các yếu tố cơ bản của Three.js
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.vr.enabled = true; // Kích hoạt chế độ VR
-document.body.appendChild(renderer.domElement);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js GLTF Example</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
-// Thêm ánh sáng vào cảnh
-const ambientLight = new THREE.AmbientLight(0x404040, 2);
-scene.add(ambientLight);
+<script>
+    // Scene setup
+    const scene = new THREE.Scene();
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(0, 1, 0).normalize();
-scene.add(directionalLight);
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 5);
 
-const spotLight = new THREE.SpotLight(0xffffff, 1.5);
-spotLight.position.set(100, 1000, 100);
-spotLight.castShadow = true;
-scene.add(spotLight);
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(50, 50, 50);
-scene.add(pointLight);
+    // OrbitControls setup
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1, 0);
+    controls.update();
 
-// Thêm OrbitControls để người dùng có thể xoay và di chuyển camera
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    // Lighting setup
+    const ambientLight = new THREE.AmbientLight(0x404040, 2); // Soft white light
+    scene.add(ambientLight);
 
-// Tải mô hình GLB
-const loader = new THREE.GLTFLoader();
-loader.load('model/church+WEI.glb', function (gltf) {
-    scene.add(gltf.scene);
-    animate();
-}, undefined, function (error) {
-    console.error(error);
-});
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Daylight
+    directionalLight.position.set(5, 10, 7.5).normalize();
+    scene.add(directionalLight);
 
-// Đặt vị trí của camera
-camera.position.z = 5;
+    // GLTFLoader to load .glb file
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+        'model/church+WEI.glb',
+        function (gltf) {
+            scene.add(gltf.scene);
+        },
+        undefined,
+        function (error) {
+            console.error(error);
+        }
+    );
 
-// Hàm animate để cập nhật và render cảnh
-function animate() {
-    renderer.setAnimationLoop(() => {
-        controls.update();
-        renderer.render(scene, camera);
+    // Window resize handler
+    window.addEventListener('resize', function () {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
     });
-}
 
-// Thêm nút Enter VR vào trang web
-document.body.appendChild(WEBVR.createButton(renderer));
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+
+    animate();
+</script>
+</body>
+</html>
